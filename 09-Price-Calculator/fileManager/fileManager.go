@@ -14,11 +14,13 @@ type SFileManager struct {
 }
 
 func (fm SFileManager) ReadResultFromInput() ([]string, error) {
-		file, err := os.Open(fm.InputFilePath)
+	file, err := os.Open(fm.InputFilePath)
 
 	if err != nil {
 		return nil, errors.New("Could not open the file")
 	}
+
+	defer file.Close() // -> instead of closing files manually when an error occurs or at the end of the function, you defer it, once the file is usable that is, and go takes care of it for you
 
 	scanner := bufio.NewScanner(file)
 	var lines []string
@@ -29,11 +31,9 @@ func (fm SFileManager) ReadResultFromInput() ([]string, error) {
 
 	err = scanner.Err()
 	if err != nil {
-		file.Close()
 		return nil, errors.New("Failed to read the file content")
 	}
 
-	file.Close()
 	return lines, nil
 }
 
@@ -43,11 +43,12 @@ func (fm SFileManager) WriteResultToOutput(data any) error {
 		return errors.New("Failed to create a file")
 	}
 
+	defer file.Close()
+
 	time.Sleep(3 * time.Second)
 
 	err = json.NewEncoder(file).Encode(data)
 	if err != nil {
-		file.Close()
 		return errors.New("Failed to convert data to JSON")
 	}
 	
