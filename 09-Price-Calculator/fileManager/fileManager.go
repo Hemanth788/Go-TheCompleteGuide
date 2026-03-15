@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
+	"time"
 )
 
 type SFileManager struct {
@@ -41,6 +42,8 @@ func (fm SFileManager) WriteResultToOutput(data any) error {
 	if err != nil {
 		return errors.New("Failed to create a file")
 	}
+
+	time.Sleep(3 * time.Second)
 
 	err = json.NewEncoder(file).Encode(data)
 	if err != nil {
