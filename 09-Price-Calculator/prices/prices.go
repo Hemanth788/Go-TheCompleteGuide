@@ -4,36 +4,37 @@ import (
 	"fmt"
 
 	"go.com/price-calculator/conversion"
-	fileManager "go.com/price-calculator/fileManager"
+	ioManager "go.com/price-calculator/ioManager"
 )
 
 type STaxedPricesJob struct {
-	TaxRate     float64
-	Prices      []float64
-	TaxedPrices map[string]string
+	TaxRate     float64 `json:"tax_rate"`
+	Prices      []float64 `json:"prices"`
+	TaxedPrices map[string]string `json:"taxed_prices"`
+	IOManager ioManager.IIOManager `json:"-"`
 }
 
-const PRICES_FILE_PATH = "prices.txt"
-const TAXED_PRICES_FILE_PATH = "taxed_prices.json"
-
-func (tpJob *STaxedPricesJob) LoadData() {
-	lines, err := fileManager.ReadLinesFromFile(PRICES_FILE_PATH)
+func (tpJob *STaxedPricesJob) LoadData() error {
+	lines, err := tpJob.IOManager.ReadResultFromInput()
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 	prices, err := conversion.StringsToFloats(lines)
 
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 
 	tpJob.Prices = prices
+	return nil
 }
 
-func (tpJob *STaxedPricesJob) Process() {
-	tpJob.LoadData()
+func (tpJob *STaxedPricesJob) Process() error {
+	err := tpJob.LoadData()
+	if err != nil {
+		return err
+	}
+
 	var result = make(map[string]string)
 
 	for _, price := range tpJob.Prices {
@@ -42,11 +43,12 @@ func (tpJob *STaxedPricesJob) Process() {
 	}
 
 	tpJob.TaxedPrices = result
-	fileManager.WriteJSONToFile(tpJob, fmt.Sprintf("%.0f%v%v", tpJob.TaxRate * 100, "%_", TAXED_PRICES_FILE_PATH))
+	return tpJob.IOManager.WriteResultToOutput(tpJob)
 }
 
-func NewSTaxedPricesJob(taxRate float64) *STaxedPricesJob {
+func NewSTaxedPricesJob(ioM ioManager.IIOManager, taxRate float64) *STaxedPricesJob {
 	return &STaxedPricesJob{
+		IOManager: ioM,
 		Prices: []float64{},
 		TaxRate: taxRate,
 	}
