@@ -9,3 +9,7 @@ I took a Udemy course on Golang to refresh my knowledge of it. This is a reposit
 ## Why should I care?
 
 If you asked this question, you probably shouldn't, but if you are looking for someone who knows Go and came across this repository in that search, then you probably have your answer and didn't ask this question.
+
+## Successfully completed the course BTW
+
+![Course completion certificate](image.png)
