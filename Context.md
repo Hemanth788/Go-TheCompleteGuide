@@ -171,5 +171,4 @@ for {
 
 ## Source?
 
-- <https://www.youtube.com/watch?v=eqSgTJ6HTsw>
 - ChatGPT
